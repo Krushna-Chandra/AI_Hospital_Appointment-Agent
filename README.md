@@ -45,7 +45,7 @@ The agent can:
 
 ### ✅ Appointment Booked
 
-![Appointment Booked](https://github.com/user-attachments/assets/b3355069-2e5e-4347-ae74-900dac4a49e4)
+![Appointment Booked](<img width="1917" height="832" alt="Appointment booked" src="https://github.com/user-attachments/assets/a59c1e40-fbe8-47a9-97f5-0992c8e47216" />)
 
 ### 📄 PDF Download
 
