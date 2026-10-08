@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>City Hospital - Sarah</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+
+        body {
+            font-family: Inter, sans-serif;
+        }
+
+        /* =========================
+           VOICE RING
+        ========================= */
+
+        .ring {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: #08090c;
+            display: grid;
+            place-items: center;
+            position: relative;
+        }
+
+        .ring:before {
+            content: "";
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+
+            background: conic-gradient(
+                #60a5fa,
+                #a78bfa,
+                #f472b6,
+                #60a5fa
+            );
+
+            filter: blur(20px);
+            z-index: -1;
+        }
+
+        .listening:before {
+            animation: spin 2s linear infinite;
+        }
+
+        .speaking:before {
+            animation: pulse 1.3s infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* =========================
+           APPOINTMENT TICKET
+        ========================= */
+
+        .ticket {
+            margin: 16px auto;
+            padding: 18px;
+            max-width: 520px;
+
+            border: 1px solid #22c55e;
+            background: #f0fff4;
+            border-radius: 16px;
+
+            color: #111827;
+        }
+
+        .ticket h3 {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .ticket p {
+            margin: 5px 0;
+        }
+
+        .download {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 14px;
+
+            background: #2563eb;
+            color: white;
+
+            border-radius: 9px;
+            text-decoration: none;
+        }
+
+        .download:hover {
+            background: #1d4ed8;
+        }
+
+    </style>
+</head>
+
+
+<body class="bg-gray-100 min-h-screen">
+
+
+    <!-- =====================================================
+         HOME
+    ===================================================== -->
+
+    <div id="home"
+        class="min-h-screen flex items-center justify-center p-5">
+
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-xl p-7">
+
+            <h1 class="font-bold text-2xl">
+                🏥 City Hospital
+            </h1>
+
+            <p class="text-gray-500 text-sm mt-1">
+                AI Appointment Assistant
+            </p>
+
+
+            <div class="space-y-3 mt-6">
+
+                <!-- PATIENT NAME -->
+
+                <input
+                    id="name"
+                    class="w-full p-3 bg-gray-50 border rounded-xl"
+                    placeholder="Patient name"
+                    autocomplete="name">
+
+
+                <!-- PATIENT EMAIL -->
+
+                <input
+                    id="email"
+                    type="email"
+                    class="w-full p-3 bg-gray-50 border rounded-xl"
+                    placeholder="Email address"
+                    autocomplete="email">
+
+
+                <!-- LANGUAGE -->
+
+                <select
+                    id="lang"
+                    class="w-full p-3 bg-gray-50 border rounded-xl">
+
+                    <option value="en-IN">
+                        English
+                    </option>
+
+                    <option value="hi-IN">
+                        Hindi (हिंदी)
+                    </option>
+
+                    <option value="te-IN">
+                        Telugu (తెలుగు)
+                    </option>
+
+                </select>
+
+
+                <!-- START VOICE CALL -->
+
+                <button
+                    id="start"
+                    class="w-full bg-indigo-600 text-white font-semibold py-4 rounded-xl">
+
+                    Start Voice Call
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         VOICE CALL
+    ===================================================== -->
+
+    <div id="voice"
+        class="hidden fixed inset-0 bg-[#0f1115] text-white flex flex-col">
+
+
+        <!-- TOP BAR -->
+
+        <div class="p-5 flex justify-between">
+
+            <b>
+                Sarah · Voice Call
+            </b>
+
+            <span id="timer">
+                00:00
+            </span>
+
+        </div>
+
+
+
+        <!-- CENTER -->
+
+        <div
+            class="flex-1 flex flex-col items-center justify-center overflow-y-auto px-5">
+
+
+            <!-- VOICE RING -->
+
+            <div id="ring"
+                class="ring">
+
+                <div
+                    class="w-[270px] h-[270px] rounded-full bg-[#0f1115] grid place-items-center">
+
+                    <i
+                        id="icon"
+                        class="fa-solid fa-wave-square text-6xl text-gray-600">
+                    </i>
+
+                </div>
+
+            </div>
+
+
+            <!-- STATUS -->
+
+            <p
+                id="status"
+                class="mt-7 text-gray-400">
+
+                Connecting...
+
+            </p>
+
+
+            <!-- AI TEXT -->
+
+            <div
+                id="voiceText"
+                class="mt-5 max-w-2xl text-center text-blue-200">
+
+            </div>
+
+
+            <!-- TICKET -->
+
+            <div
+                id="voiceTicket"
+                class="hidden w-full max-w-lg">
+
+            </div>
+
+        </div>
+
+
+
+        <!-- CALL CONTROLS -->
+
+        <div
+            class="p-5 flex justify-center gap-5">
+
+
+            <!-- MUTE -->
+
+            <button
+                id="mute"
+                class="w-12 h-12 rounded-full bg-gray-700">
+
+                <i
+                    id="muteIcon"
+                    class="fa-solid fa-microphone">
+                </i>
+
+            </button>
+
+
+            <!-- END CALL -->
+
+            <button
+                id="endVoice"
+                class="w-16 h-12 rounded-full bg-red-600">
+
+                <i class="fa-solid fa-phone-slash"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+<script>
+
+/* =========================================================
+   CONFIGURATION
+========================================================= */
+
+const API = window.location.origin;
+
+
+/* =========================================================
+   SPEECH RECOGNITION
+========================================================= */
+
+const SR =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+
+/* =========================================================
+   GLOBAL VARIABLES
+========================================================= */
+
+let sid = null;
+
+let rec = null;
+
+let active = false;
+
+let busy = false;
+
+let muted = false;
+
+let closing = false;
+
+let audio = null;
+
+let silenceTimer = null;
+
+let timer = null;
+
+let endTimer = null;
+
+let seconds = 0;
+
+let finalText = "";
+
+let recording = false;
+
+let starting = false;
+
+
+/* =========================================================
+   SHORT ELEMENT SELECTOR
+========================================================= */
+
+const $ = id =>
+    document.getElementById(id);
+
+
+/* =========================================================
+   SCREEN
+========================================================= */
+
+function screen(id) {
+
+    ["home", "voice"].forEach(
+        x => {
+
+            $(x).classList.toggle(
+                "hidden",
+                x !== id
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   LANGUAGE
+========================================================= */
+
+function language() {
+
+    return $("lang").value;
+
+}
+
+
+/* =========================================================
+   VISUAL STATE
+========================================================= */
+
+function visual(state) {
+
+    $("ring").className =
+        "ring " + state;
+
+
+    const states = {
+
+        listening: [
+            "fa-solid fa-microphone text-6xl text-green-500",
+            "Listening..."
+        ],
+
+        thinking: [
+            "fa-solid fa-brain text-6xl text-purple-500",
+            "Sarah is thinking..."
+        ],
+
+        speaking: [
+            "fa-solid fa-volume-high text-6xl text-pink-500",
+            "Sarah is speaking..."
+        ],
+
+        idle: [
+            "fa-solid fa-wave-square text-6xl text-gray-600",
+            "Ready"
+        ]
+
+    };
+
+
+    if (states[state]) {
+
+        $("icon").className =
+            states[state][0];
+
+        $("status").textContent =
+            states[state][1];
+
+    }
+
+}
+
+
+/* =========================================================
+   TIMER
+========================================================= */
+
+function startTimer() {
+
+    clearInterval(timer);
+
+    seconds = 0;
+
+    $("timer").textContent =
+        "00:00";
+
+
+    timer = setInterval(() => {
+
+        seconds++;
+
+
+        $("timer").textContent =
+            `${String(
+                Math.floor(seconds / 60)
+            ).padStart(2, "0")}:` +
+
+            `${String(
+                seconds % 60
+            ).padStart(2, "0")}`;
+
+    }, 1000);
+
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHTML(value) {
+
+    return String(
+        value ?? ""
+    ).replace(
+        /[&<>"']/g,
+
+        char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        }[char])
+    );
+
+}
+
+
+/* =========================================================
+   CLEAR TICKET
+========================================================= */
+
+function clearTicket() {
+
+    $("voiceTicket").innerHTML = "";
+
+    $("voiceTicket")
+        .classList.add("hidden");
+
+}
+
+
+/* =========================================================
+   SHOW APPOINTMENT TICKET
+========================================================= */
+
+function showTicket(ticket) {
+
+    if (!ticket) {
+        return;
+    }
+
+
+    const emailMessage =
+        ticket.email_sent
+            ? "📧 Appointment ticket sent to your email."
+            : "📄 Appointment ticket is ready for download.";
+
+
+    $("voiceTicket").innerHTML = `
+
+        <div class="ticket">
+
+            <h3>
+                ✅ Appointment Confirmed
+            </h3>
+
+            <p>
+                <b>Appointment ID:</b>
+                ${escapeHTML(
+                    ticket.appointment_code
+                )}
+            </p>
+
+            <p>
+                <b>Doctor:</b>
+                ${escapeHTML(
+                    ticket.doctor_name
+                )}
+            </p>
+
+            <p>
+                <b>Specialization:</b>
+                ${escapeHTML(
+                    ticket.specialty
+                )}
+            </p>
+
+            <p>
+                <b>Appointment Time:</b>
+                ${escapeHTML(
+                    ticket.appointment_time
+                )}
+            </p>
+
+            <p>
+                ${emailMessage}
+            </p>
+
+            <a
+                class="download"
+                href="${API}${ticket.download_url}"
+                target="_blank"
+                download>
+
+                📄 Download Appointment Ticket
+
+            </a>
+
+        </div>
+
+    `;
+
+
+    $("voiceTicket")
+        .classList.remove("hidden");
+
+}
+
+
+/* =========================================================
+   PLAY AI AUDIO
+========================================================= */
+
+function playAudio(base64) {
+
+    return new Promise(resolve => {
+
+        if (
+            !active ||
+            !base64
+        ) {
+
+            resolve();
+
+            return;
+
+        }
+
+
+        visual("speaking");
+
+
+        audio = new Audio(
+            "data:audio/mp3;base64," +
+            base64
+        );
+
+
+        audio.onended = () => {
+
+            audio = null;
+
+            resolve();
+
+        };
+
+
+        audio.onerror = () => {
+
+            audio = null;
+
+            resolve();
+
+        };
+
+
+        audio.play().catch(() => {
+
+            audio = null;
+
+            resolve();
+
+        });
+
+    });
+
+}
+
+
+/* =========================================================
+   STOP LISTENING
+========================================================= */
+
+function stopListening() {
+
+    clearTimeout(
+        silenceTimer
+    );
+
+
+    if (
+        rec &&
+        (
+            recording ||
+            starting
+        )
+    ) {
+
+        try {
+
+            rec.stop();
+
+        } catch {}
+
+    }
+
+
+    recording = false;
+
+    starting = false;
+
+}
+
+
+/* =========================================================
+   START LISTENING
+========================================================= */
+
+function listen() {
+
+    if (
+        !active ||
+        !rec ||
+        busy ||
+        audio ||
+        muted ||
+        recording ||
+        starting ||
+        closing
+    ) {
+
+        return;
+
+    }
+
+
+    starting = true;
+
+
+    try {
+
+        rec.lang =
+            language();
+
+        rec.start();
+
+    } catch {
+
+        starting = false;
+
+
+        setTimeout(
+            listen,
+            500
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   SPEECH RECOGNITION
+========================================================= */
+
+function setupRecognition() {
+
+    if (!SR) {
+
+        alert(
+            "Please use Google Chrome or Microsoft Edge for voice support."
+        );
+
+        return false;
+
+    }
+
+
+    rec = new SR();
+
+
+    rec.continuous = true;
+
+    rec.interimResults = true;
+
+
+    rec.onstart = () => {
+
+        recording = true;
+
+        starting = false;
+
+        visual("listening");
+
+    };
+
+
+    rec.onresult = event => {
+
+        if (
+            !active ||
+            busy ||
+            muted ||
+            closing
+        ) {
+
+            return;
+
+        }
+
+
+        let interim = "";
+
+
+        for (
+            let i = event.resultIndex;
+            i < event.results.length;
+            i++
+        ) {
+
+            const result =
+                event.results[i];
+
+
+            if (result.isFinal) {
+
+                finalText +=
+                    result[0].transcript +
+                    " ";
+
+            } else {
+
+                interim +=
+                    result[0].transcript;
+
+            }
+
+        }
+
+
+        const text =
+            (
+                finalText +
+                interim
+            ).trim();
+
+
+        if (text) {
+
+            $("voiceText")
+                .textContent = text;
+
+        }
+
+
+        clearTimeout(
+            silenceTimer
+        );
+
+
+        /*
+         * Wait approximately 5 seconds
+         * after the user stops speaking.
+         */
+
+        silenceTimer =
+            setTimeout(
+                sendVoice,
+                5000
+            );
+
+    };
+
+
+    rec.onerror = event => {
+
+        console.log(
+            "Speech recognition:",
+            event.error
+        );
+
+
+        recording = false;
+
+        starting = false;
+
+
+        if (
+            active &&
+            !busy &&
+            !muted &&
+            !closing
+        ) {
+
+            setTimeout(
+                listen,
+                700
+            );
+
+        }
+
+    };
+
+
+    rec.onend = () => {
+
+        recording = false;
+
+        starting = false;
+
+
+        if (
+            active &&
+            !busy &&
+            !muted &&
+            !closing
+        ) {
+
+            setTimeout(
+                listen,
+                300
+            );
+
+        }
+
+    };
+
+
+    return true;
+
+}
+
+
+/* =========================================================
+   CREATE NEW SESSION
+========================================================= */
+
+async function createSession() {
+
+    const response =
+        await fetch(
+            `${API}/agent/new_session`,
+            {
+                method: "POST"
+            }
+        );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Could not create session."
+        );
+
+    }
+
+
+    return response.json();
+
+}
+
+
+/* =========================================================
+   SEND MESSAGE TO BACKEND
+========================================================= */
+
+async function send(text) {
+
+    if (
+        !sid ||
+        busy ||
+        closing
+    ) {
+
+        return;
+
+    }
+
+
+    busy = true;
+
+
+    clearTicket();
+
+    stopListening();
+
+    visual("thinking");
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/agent/message`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        /*
+                         * Session
+                         */
+
+                        session_id:
+                            sid,
+
+
+                        /*
+                         * User message
+                         */
+
+                        text:
+                            text,
+
+
+                        /*
+                         * Selected language
+                         */
+
+                        language_code:
+                            language(),
+
+
+                        /*
+                         * Patient name from HOME PAGE
+                         */
+
+                        patient_name:
+                            $("name")
+                                .value
+                                .trim(),
+
+
+                        /*
+                         * Patient email from HOME PAGE
+                         *
+                         * This is the email that
+                         * receives the ticket.
+                         */
+
+                        patient_email:
+                            $("email")
+                                .value
+                                .trim()
+
+                    })
+
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Server request failed."
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        /* =================================================
+           APPOINTMENT SUCCESS
+        ================================================= */
+
+        if (data.auto_end) {
+
+            closing = true;
+
+            stopListening();
+
+
+            /*
+             * Confirmation text
+             */
+
+            $("voiceText")
+                .textContent =
+                    data.voice_text ||
+                    "Your appointment has been confirmed.";
+
+
+            /*
+             * Confirmation audio
+             */
+
+            if (data.audio) {
+
+                await playAudio(
+                    data.audio
+                );
+
+            }
+
+
+            /*
+             * SHOW PDF TICKET
+             */
+
+            if (data.ticket) {
+
+                showTicket(
+                    data.ticket
+                );
+
+            }
+
+
+            /*
+             * CLOSING MESSAGE
+             */
+
+            if (data.closing_audio) {
+
+                $("voiceText")
+                    .textContent =
+                        data.closing_text ||
+                        "Thank you for choosing City Hospital. It was a pleasure assisting you. Have a wonderful day. Goodbye.";
+
+
+                await playAudio(
+                    data.closing_audio
+                );
+
+            }
+
+
+            /*
+             * Automatically end call
+             * 10 seconds later.
+             */
+
+            endTimer =
+                setTimeout(
+                    endCall,
+                    10000
+                );
+
+
+            return;
+
+        }
+
+
+        /* =================================================
+           NORMAL RESPONSE
+        ================================================= */
+
+        $("voiceText")
+            .textContent =
+                data.voice_text ||
+                data.text ||
+                "";
+
+
+        /*
+         * Play Sarah's audio.
+         */
+
+        if (data.audio) {
+
+            await playAudio(
+                data.audio
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+
+        $("voiceText")
+            .textContent =
+                "Sorry, I could not connect to City Hospital.";
+
+    }
+
+    finally {
+
+        busy = false;
+
+
+        if (
+            !closing &&
+            active &&
+            !audio &&
+            !muted
+        ) {
+
+            setTimeout(
+                listen,
+                500
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   SEND VOICE INPUT
+========================================================= */
+
+function sendVoice() {
+
+    if (
+        !active ||
+        busy ||
+        closing
+    ) {
+
+        return;
+
+    }
+
+
+    const text =
+        finalText.trim();
+
+
+    if (!text) {
+
+        return;
+
+    }
+
+
+    finalText = "";
+
+
+    clearTimeout(
+        silenceTimer
+    );
+
+
+    stopListening();
+
+
+    send(text);
+
+}
+
+
+/* =========================================================
+   START VOICE CALL
+========================================================= */
+
+async function startVoice() {
+
+    /*
+     * Validate speech support.
+     */
+
+    if (!setupRecognition()) {
+
+        return;
+
+    }
+
+
+    /*
+     * Validate patient name.
+     */
+
+    const patientName =
+        $("name")
+            .value
+            .trim();
+
+
+    if (!patientName) {
+
+        alert(
+            "Please enter your patient name."
+        );
+
+        $("name").focus();
+
+        return;
+
+    }
+
+
+    /*
+     * Validate patient email.
+     */
+
+    const patientEmail =
+        $("email")
+            .value
+            .trim();
+
+
+    if (!patientEmail) {
+
+        alert(
+            "Please enter your email address."
+        );
+
+        $("email").focus();
+
+        return;
+
+    }
+
+
+    if (
+        !$("email").checkValidity()
+    ) {
+
+        alert(
+            "Please enter a valid email address."
+        );
+
+        $("email").focus();
+
+        return;
+
+    }
+
+
+    /*
+     * Start call.
+     */
+
+    active = true;
+
+    closing = false;
+
+    muted = false;
+
+    busy = true;
+
+
+    screen("voice");
+
+
+    startTimer();
+
+    clearTicket();
+
+    visual("thinking");
+
+
+    try {
+
+        /*
+         * Create backend session.
+         */
+
+        const data =
+            await createSession();
+
+
+        sid =
+            data.session_id;
+
+
+        /*
+         * Sarah's greeting.
+         */
+
+        $("voiceText")
+            .textContent =
+                data.greeting ||
+                "Hello, welcome to City Hospital. How can I help you today?";
+
+
+        /*
+         * Play greeting.
+         */
+
+        if (data.audio) {
+
+            await playAudio(
+                data.audio
+            );
+
+        }
+
+
+        /*
+         * Start listening.
+         */
+
+        busy = false;
+
+
+        if (active) {
+
+            listen();
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+
+        $("voiceText")
+            .textContent =
+                "Sorry, I could not connect to City Hospital.";
+
+
+        busy = false;
+
+
+        setTimeout(
+            listen,
+            500
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   END CALL
+========================================================= */
+
+function endCall() {
+
+    active = false;
+
+    closing = true;
+
+
+    clearTimeout(
+        silenceTimer
+    );
+
+
+    clearTimeout(
+        endTimer
+    );
+
+
+    stopListening();
+
+
+    if (audio) {
+
+        audio.pause();
+
+        audio = null;
+
+    }
+
+
+    clearInterval(
+        timer
+    );
+
+
+    /*
+     * Return to home screen.
+     */
+
+    screen("home");
+
+
+    $("voiceText")
+        .textContent = "";
+
+
+    $("voiceTicket")
+        .innerHTML = "";
+
+
+    $("voiceTicket")
+        .classList.add("hidden");
+
+
+    $("status")
+        .textContent =
+            "Connecting...";
+
+
+    $("timer")
+        .textContent =
+            "00:00";
+
+
+    sid = null;
+
+    rec = null;
+
+    finalText = "";
+
+    busy = false;
+
+}
+
+
+/* =========================================================
+   MUTE
+========================================================= */
+
+$("mute").onclick = () => {
+
+    muted = !muted;
+
+
+    $("muteIcon").className =
+        muted
+
+            ? "fa-solid fa-microphone-slash"
+
+            : "fa-solid fa-microphone";
+
+
+    if (muted) {
+
+        stopListening();
+
+
+        $("status")
+            .textContent =
+                "Microphone muted";
+
+    }
+
+    else {
+
+        listen();
+
+    }
+
+};
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+$("start").onclick =
+    startVoice;
+
+
+$("endVoice").onclick =
+    endCall;
+
+</script>
+
+</body>
+</html>
