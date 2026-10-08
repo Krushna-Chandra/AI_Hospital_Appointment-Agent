@@ -33,18 +33,27 @@ The agent can:
 > **Note:** This README describes the current **Groq-powered** implementation. Earlier Gemini-based versions are not part of the current architecture.
 
 ---
-
 # 🖥️ User Interface Preview
 
-[Home Page](<img width="1919" height="824" alt="home page" src="https://github.com/user-attachments/assets/a6fa58ad-d08a-4067-8777-68712cb7401d" />)
-[Voice call](<img width="1918" height="828" alt="voice call starting" src="https://github.com/user-attachments/assets/2db022b1-fc98-403e-85b5-a18a7426f933" />)
-[Appointment Booked](<img width="1918" height="828" alt="voice call starting" src="https://github.com/user-attachments/assets/b3355069-2e5e-4347-ae74-900dac4a49e4" />)
-[Pdf Download](<img width="1334" height="820" alt="Download pdf" src="https://github.com/user-attachments/assets/0fbc0af6-6942-4f87-8f2a-093ee59659b5" />)
+### 🏠 Home Page
 
+![Home Page](https://github.com/user-attachments/assets/a6fa58ad-d08a-4067-8777-68712cb7401d)
 
-The interface is designed as a clean, modern hospital voice-assistant experience with patient details, language selection, AI voice-call status, and appointment confirmation.
+### 🎙️ Voice Call
+
+![Voice Call](https://github.com/user-attachments/assets/2db022b1-fc98-403e-85b5-a18a7426f933)
+
+### ✅ Appointment Booked
+
+![Appointment Booked](https://github.com/user-attachments/assets/b3355069-2e5e-4347-ae74-900dac4a49e4)
+
+### 📄 PDF Download
+
+![PDF Download](https://github.com/user-attachments/assets/0fbc0af6-6942-4f87-8f2a-093ee59659b5)
 
 ---
+
+The interface is designed as a clean, modern hospital voice-assistant experience with patient details, language selection, AI voice-call status, appointment confirmation, and PDF ticket download.
 
 # 🎯 How It Works
 
