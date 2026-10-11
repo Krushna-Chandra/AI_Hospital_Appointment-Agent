@@ -19,6 +19,7 @@ from groq import Groq
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
+from fastapi.staticfiles import StaticFiles
 load_dotenv()
 MODEL_NAME = os.environ.get('GROQ_MODEL', 'openai/gpt-oss-120b')
 DB_NAME = 'appointments_poc.db'
@@ -27,6 +28,7 @@ os.makedirs(TICKET_DIR, exist_ok=True)
 if os.name == 'nt':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 app = FastAPI(title='AI Hospital Receptionist System', version='2.0')
+app.mount("/static", StaticFiles(directory="static"), name="static")
 GROQ_CLIENT = None
 
 # -------------------- Groq --------------------
